@@ -119,15 +119,17 @@ def evaluate_model(X, y, n_folds=5):
     for classifier_name, classifier in zip(model_names, classifiers):
         accuracies = []  # list to store accuracies for each fold
 
-        # Reset model for each fold
-        if isinstance(classifier, SimpleClassifier):
-            classifier = SimpleClassifier(n, num_classes)
-            optimizer = optim.SGD(classifier.parameters(), lr=1e-3, momentum=0.9)
-
         # prepare cross-validation
         kfold = KFold(n_folds, shuffle=True, random_state=1)
         # enumerate splits
         for i, (train_ix, test_ix) in enumerate(kfold.split(X)):
+
+            # reset model for each fold
+            if isinstance(classifier, SimpleClassifier):
+                print("Resetting model to random weights for fold", i)
+                classifier = SimpleClassifier(n, num_classes)
+                optimizer = optim.SGD(classifier.parameters(), lr=1e-3, momentum=0.9)
+
             # select rows for train and test
             trainX, trainY, testX, testY = X[train_ix], y[train_ix], X[test_ix], y[test_ix]
 
